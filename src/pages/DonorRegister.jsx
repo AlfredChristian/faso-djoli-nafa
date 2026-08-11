@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import Header from '../components/Header'
 import Input from '../components/Input'
 import BloodGroupPicker from '../components/BloodGroupPicker'
 import Button from '../components/Button'
-import Header from '../components/Header'
+import { registerDonor } from '../services/api'
 
 function DonorRegister() {
   const [form, setForm] = useState({
@@ -13,14 +14,17 @@ function DonorRegister() {
     dernierDon: "",
   })
   const [envoye, setEnvoye] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const updateField = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("Formulaire envoyé :", form)
+    setLoading(true)
+    await registerDonor(form)
+    setLoading(false)
     setEnvoye(true)
   }
 
@@ -79,8 +83,8 @@ function DonorRegister() {
             onChange={updateField("dernierDon")}
           />
 
-          <Button type="submit" variant="primary" className="mt-2">
-            Je m'inscris
+          <Button type="submit" variant="primary" className="mt-2" disabled={loading}>
+            {loading ? "Envoi..." : "Je m'inscris"}
           </Button>
         </form>
       </div>
