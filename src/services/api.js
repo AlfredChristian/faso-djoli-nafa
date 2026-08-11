@@ -18,3 +18,15 @@ export async function getNeeds() {
     { id: 3, hopital: "CMA Ouagadougou", groupe: "B+", quantite: 2, urgence: "normal", lieu: "Ouagadougou" },
   ]
 }
+
+export async function getMyProfile() {
+  await new Promise((r) => setTimeout(r, 300))
+  return {
+    nom: "Awa Ouédraogo",
+    groupe: "O-",
+    ville: "Ouagadougou",
+    dernierDon: "2026-03-15",
+    nombreDons: 4,
+    viesAidees: 12,
+  }
+}

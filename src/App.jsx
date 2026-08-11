@@ -4,6 +4,7 @@ import DonorRegister from './pages/DonorRegister'
 import HospitalNeed from './pages/HospitalNeed'
 import NeedsList from './pages/NeedsList'
 import Login from './pages/Login'
+import Profile from './pages/Profile'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/hopital" element={<HospitalNeed />} />
         <Route path="/besoins" element={<NeedsList />} />
         <Route path="/connexion" element={<Login />} />
+        <Route path="/profil" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   )
