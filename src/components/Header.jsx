@@ -6,6 +6,7 @@ const LINKS = [
   { to: "/besoins", label: "Besoins" },
   { to: "/inscription", label: "Donneur" },
   { to: "/hopital", label: "Hôpital" },
+  { to: "/connexion", label: "Connexion" },
 ]
 
 function Header() {
