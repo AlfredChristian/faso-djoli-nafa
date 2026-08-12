@@ -88,3 +88,43 @@ export async function getBloodGroupDistribution() {
     { groupe: "AB-", total: 4 },
   ]
 }
+
+const PRENOMS = ["Awa", "Ibrahim", "Fatimata", "Moussa", "Aminata", "Boureima", "Salamata", "Rasmané", "Adama", "Aicha"]
+
+export async function findMatchingDonors(groupe, lieu) {
+  await new Promise((r) => setTimeout(r, 600))
+  const count = Math.floor(Math.random() * 3) + 3 // entre 3 et 5 donneurs simulés
+  return Array.from({ length: count }, (_, i) => ({
+    id: i + 1,
+    prenom: PRENOMS[Math.floor(Math.random() * PRENOMS.length)],
+    distance: (Math.random() * 4 + 0.3).toFixed(1),
+  }))
+}
+
+export async function getMyBadges() {
+  await new Promise((r) => setTimeout(r, 300))
+  return [
+    { id: "premier", label: "Premier don", description: "Tu as fait ton tout premier don", earned: true },
+    { id: "fidele", label: "Donneur fidèle", description: "3 dons ou plus", earned: true },
+    { id: "heros", label: "Héros local", description: "5 dons ou plus", earned: false },
+    { id: "rapide", label: "Réponse rapide", description: "Répondu à une alerte en moins d'1h", earned: true },
+    { id: "raro", label: "Groupe rare", description: "Donneur d'un groupe sanguin rare (O-, AB-)", earned: true },
+    { id: "legende", label: "Légende", description: "10 dons ou plus", earned: false },
+  ]
+}
+
+export async function getDonationHistory() {
+  await new Promise((r) => setTimeout(r, 300))
+  return [
+    { id: 1, date: "2026-03-15", centre: "CNTS Ouagadougou", quantite: 1, ville: "Ouagadougou" },
+    { id: 2, date: "2025-12-02", centre: "CHU Yalgado Ouédraogo", quantite: 1, ville: "Ouagadougou" },
+    { id: 3, date: "2025-08-20", centre: "CNTS Ouagadougou", quantite: 1, ville: "Ouagadougou" },
+    { id: 4, date: "2025-04-11", centre: "CMA Secteur 30", quantite: 1, ville: "Ouagadougou" },
+  ]
+}
+
+export async function updateProfile(data) {
+  console.log("API → mise à jour profil :", data)
+  await new Promise((r) => setTimeout(r, 500))
+  return { success: true }
+}

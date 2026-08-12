@@ -6,6 +6,8 @@ import HospitalNeed from './pages/HospitalNeed'
 import NeedsList from './pages/NeedsList'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
+import DonationHistory from './pages/DonationHistory'
+import EditProfile from './pages/EditProfile'
 import Admin from './pages/Admin'
 import NotFound from './pages/NotFound'
 
@@ -20,6 +22,8 @@ function App() {
           <Route path="/besoins" element={<NeedsList />} />
           <Route path="/connexion" element={<Login />} />
           <Route path="/profil" element={<Profile />} />
+          <Route path="/profil/dons" element={<DonationHistory />} />
+          <Route path="/profil/modifier" element={<EditProfile />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Route>

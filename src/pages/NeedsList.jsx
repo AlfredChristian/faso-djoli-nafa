@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { List } from 'lucide-react'
+import { List, Map as MapIcon } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import PageHeader from '../components/PageHeader'
+import NeedsMap from '../components/NeedsMap'
 import { getNeeds } from '../services/api'
 
 const URGENCY = {
@@ -13,6 +14,7 @@ const URGENCY = {
 function NeedsList() {
   const [needs, setNeeds] = useState([])
   const [loading, setLoading] = useState(true)
+  const [view, setView] = useState("list")
 
   useEffect(() => {
     getNeeds().then((data) => {
@@ -26,26 +28,45 @@ function NeedsList() {
       <TopBar />
       <PageHeader icon={List} title="Besoins actifs" subtitle="Voici ce que les hôpitaux recherchent en ce moment." />
 
+      <div className="flex gap-2 mb-4">
+        <button
+          onClick={() => setView("list")}
+          className={`flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full transition ${view === "list" ? "bg-blood text-white" : "bg-gray-100 text-gray-500"}`}
+        >
+          <List size={15} /> Liste
+        </button>
+        <button
+          onClick={() => setView("map")}
+          className={`flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full transition ${view === "map" ? "bg-blood text-white" : "bg-gray-100 text-gray-500"}`}
+        >
+          <MapIcon size={15} /> Carte
+        </button>
+      </div>
+
       {loading && <p className="text-gray-400 text-sm">Chargement...</p>}
 
-      <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4">
-        {needs.map((need) => {
-          const u = URGENCY[need.urgence]
-          return (
-            <div key={need.id} className={`bg-white rounded-xl border border-gray-100 border-l-4 ${u.border} shadow-sm p-4`}>
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <span className="font-bold text-ink text-sm leading-snug">{need.hopital}</span>
-                <span className={`text-[11px] font-semibold px-2 py-1 rounded-full shrink-0 ${u.badge}`}>
-                  {u.label}
-                </span>
+      {!loading && view === "map" && <NeedsMap needs={needs} />}
+
+      {!loading && view === "list" && (
+        <div className="flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4">
+          {needs.map((need) => {
+            const u = URGENCY[need.urgence]
+            return (
+              <div key={need.id} className={`bg-white rounded-xl border border-gray-100 border-l-4 ${u.border} shadow-sm p-4`}>
+                <div className="flex items-start justify-between gap-3 mb-2">
+                  <span className="font-bold text-ink text-sm leading-snug">{need.hopital}</span>
+                  <span className={`text-[11px] font-semibold px-2 py-1 rounded-full shrink-0 ${u.badge}`}>
+                    {u.label}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-500">
+                  <span className="font-bold text-blood">{need.groupe}</span> · {need.quantite} poches · {need.lieu}
+                </p>
               </div>
-              <p className="text-sm text-gray-500">
-                <span className="font-bold text-blood">{need.groupe}</span> · {need.quantite} poches · {need.lieu}
-              </p>
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
