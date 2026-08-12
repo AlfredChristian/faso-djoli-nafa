@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Droplet, Bell, HeartPulse, ArrowRight, MapPin } from 'lucide-react'
 import TopBar from '../components/TopBar'
+import StockMap from '../components/StockMap'
 import { getNeeds } from '../services/api'
 
 const URGENCY_BADGE = {
@@ -61,6 +62,10 @@ function Home() {
               <p className="text-lg font-extrabold text-gold-dark">24h</p>
               <p className="text-[10px] text-gray-500 mt-0.5">Délai moyen</p>
             </div>
+          </div>
+
+          <div className="mt-6">
+            <StockMap />
           </div>
 
           <div className="mt-8">

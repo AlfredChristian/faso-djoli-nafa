@@ -128,3 +128,17 @@ export async function updateProfile(data) {
   await new Promise((r) => setTimeout(r, 500))
   return { success: true }
 }
+
+export async function getStockLevels() {
+  await new Promise((r) => setTimeout(r, 300))
+  return [
+    { id: 1, centre: "Centre de Ouagadougou", ville: "Ouagadougou", stock: 28, etat: "critique", xPct: 50.4, yPct: 47.9 },
+    { id: 2, centre: "Centre de Bobo-Dioulasso", ville: "Bobo-Dioulasso", stock: 82, etat: "stable", xPct: 15.2, yPct: 68.8 },
+    { id: 3, centre: "Centre de Koudougou", ville: "Koudougou", stock: 40, etat: "urgent", xPct: 39.7, yPct: 50.0 },
+    { id: 4, centre: "Centre de Ouahigouya", ville: "Ouahigouya", stock: 65, etat: "stable", xPct: 39.0, yPct: 26.6 },
+    { id: 5, centre: "Centre de Kaya", ville: "Kaya", stock: 55, etat: "stable", xPct: 55.9, yPct: 35.2 },
+    { id: 6, centre: "Centre de Banfora", ville: "Banfora", stock: 70, etat: "stable", xPct: 9.3, yPct: 78.4 },
+    { id: 7, centre: "Centre de Tenkodogo", ville: "Tenkodogo", stock: 22, etat: "critique", xPct: 65.0, yPct: 58.3 },
+    { id: 8, centre: "Centre de Fada N'Gourma", ville: "Fada N'Gourma", stock: 48, etat: "urgent", xPct: 74.2, yPct: 53.3 },
+  ]
+}
