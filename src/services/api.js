@@ -142,3 +142,25 @@ export async function getStockLevels() {
     { id: 8, centre: "Centre de Fada N'Gourma", ville: "Fada N'Gourma", stock: 48, etat: "urgent", xPct: 74.2, yPct: 53.3 },
   ]
 }
+
+export async function adminLogin(email, password) {
+  console.log("API → connexion admin :", email)
+  await new Promise((r) => setTimeout(r, 500))
+  // Simulation : à remplacer par une vraie vérification Firebase Auth + rôle admin
+  if (email && password.length >= 4) {
+    return { success: true }
+  }
+  return { success: false, error: "Identifiants incorrects" }
+}
+
+export function isAdminLoggedIn() {
+  return localStorage.getItem("fdn_admin") === "true"
+}
+
+export function setAdminLoggedIn(value) {
+  if (value) {
+    localStorage.setItem("fdn_admin", "true")
+  } else {
+    localStorage.removeItem("fdn_admin")
+  }
+}

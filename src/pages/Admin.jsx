@@ -1,5 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Shield, Building2, CheckCircle2, XCircle, Search, Droplet } from 'lucide-react'
+import { Shield, Building2, CheckCircle2, XCircle, Search, Droplet, LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { setAdminLoggedIn } from '../services/api'
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts'
 import PageHeader from '../components/PageHeader'
 import {
@@ -29,6 +31,11 @@ function eligible(dateStr) {
 }
 
 function Admin() {
+  const navigate = useNavigate()
+  const handleLogout = () => {
+    setAdminLoggedIn(false)
+    navigate("/admin/connexion")
+  }
   const [tab, setTab] = useState("overview")
   const [stats, setStats] = useState(null)
   const [pending, setPending] = useState([])
@@ -73,8 +80,12 @@ function Admin() {
 
   return (
     <div className="max-w-md md:max-w-5xl mx-auto px-6 md:px-8 pt-6 pb-6">
-      <PageHeader icon={Shield} title="Administration" subtitle="Vue d'ensemble et gestion de la plateforme." />
-
+        <div className="flex items-start justify-between">
+        <PageHeader icon={Shield} title="Administration" subtitle="Vue d'ensemble et gestion de la plateforme." />
+        <button onClick={handleLogout} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-blood mt-1">
+            <LogOut size={15} /> Déconnexion
+        </button>
+        </div>
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1 no-scrollbar">
         {TABS.map((t) => (
           <button
