@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import Header from '../components/Header'
+import { Bell } from 'lucide-react'
+import TopBar from '../components/TopBar'
+import PageHeader from '../components/PageHeader'
 import Input from '../components/Input'
 import BloodGroupPicker from '../components/BloodGroupPicker'
 import UrgencyPicker from '../components/UrgencyPicker'
@@ -31,7 +33,7 @@ function HospitalNeed() {
 
   if (publie) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6 text-center gap-3">
+      <div className="max-w-md mx-auto px-6 pt-24 flex flex-col items-center text-center gap-3">
         <div className="w-16 h-16 rounded-full bg-hope/10 flex items-center justify-center text-hope text-3xl">✓</div>
         <h1 className="text-xl font-bold text-ink">Besoin publié</h1>
         <p className="text-gray-500 max-w-xs">
@@ -42,25 +44,24 @@ function HospitalNeed() {
   }
 
   return (
-    <div className="min-h-screen bg-white p-6 flex flex-col items-center">
-      <div className="w-full max-w-sm">
-        <Header />
-        <h1 className="text-2xl font-bold text-ink mt-6 mb-1">Publier un besoin</h1>
-        <p className="text-gray-500 text-sm mb-6">Les donneurs compatibles seront alertés immédiatement.</p>
+    <div className="max-w-md md:max-w-2xl mx-auto px-6 md:px-8 pt-2 pb-6">
+      <TopBar />
+      <PageHeader icon={Bell} title="Publier un besoin" subtitle="Les donneurs compatibles seront alertés immédiatement." />
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Input
-            label="Nom de l'hôpital / centre"
-            name="hopital"
-            value={form.hopital}
-            onChange={updateField("hopital")}
-            placeholder="Ex: CHU Yalgado Ouédraogo"
-            required
-          />
-          <BloodGroupPicker
-            value={form.groupe}
-            onChange={(g) => setForm({ ...form, groupe: g })}
-          />
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 md:max-w-lg">
+        <Input
+          label="Nom de l'hôpital / centre"
+          name="hopital"
+          value={form.hopital}
+          onChange={updateField("hopital")}
+          placeholder="Ex: CHU Yalgado Ouédraogo"
+          required
+        />
+        <BloodGroupPicker
+          value={form.groupe}
+          onChange={(g) => setForm({ ...form, groupe: g })}
+        />
+        <div className="md:grid md:grid-cols-2 md:gap-4 flex flex-col gap-4">
           <Input
             label="Quantité (poches)"
             type="number"
@@ -70,10 +71,6 @@ function HospitalNeed() {
             placeholder="Ex: 5"
             required
           />
-          <UrgencyPicker
-            value={form.urgence}
-            onChange={(u) => setForm({ ...form, urgence: u })}
-          />
           <Input
             label="Ville / quartier"
             name="lieu"
@@ -82,12 +79,16 @@ function HospitalNeed() {
             placeholder="Ex: Ouagadougou"
             required
           />
+        </div>
+        <UrgencyPicker
+          value={form.urgence}
+          onChange={(u) => setForm({ ...form, urgence: u })}
+        />
 
-          <Button type="submit" variant="primary" className="mt-2" disabled={loading}>
-            {loading ? "Envoi..." : "Publier le besoin"}
-          </Button>
-        </form>
-      </div>
+        <Button type="submit" variant="primary" className="mt-2 md:w-fit" disabled={loading}>
+          {loading ? "Envoi..." : "Publier le besoin"}
+        </Button>
+      </form>
     </div>
   )
 }
