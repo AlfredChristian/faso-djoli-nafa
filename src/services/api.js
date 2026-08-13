@@ -164,3 +164,25 @@ export function setAdminLoggedIn(value) {
     localStorage.removeItem("fdn_admin")
   }
 }
+
+export async function sendOtp(telephone) {
+  console.log("API → envoi code SMS à :", telephone)
+  await new Promise((r) => setTimeout(r, 600))
+  return { success: true }
+}
+
+export async function verifyOtp(telephone, code) {
+  console.log("API → vérification code :", telephone, code)
+  await new Promise((r) => setTimeout(r, 500))
+  // Simulation : à remplacer par une vraie vérification Firebase Auth Phone
+  if (code.length === 4) {
+    return { success: true }
+  }
+  return { success: false, error: "Code incorrect" }
+}
+
+export async function checkActiveNeedForHospital(hopitalName) {
+  await new Promise((r) => setTimeout(r, 300))
+  const needs = await getNeeds()
+  return needs.find((n) => n.hopital.trim().toLowerCase() === hopitalName.trim().toLowerCase()) || null
+}

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Bell, CheckCircle2 } from 'lucide-react'
+import { Bell, CheckCircle2, AlertTriangle } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import PageHeader from '../components/PageHeader'
 import Input from '../components/Input'
 import BloodGroupPicker from '../components/BloodGroupPicker'
 import UrgencyPicker from '../components/UrgencyPicker'
 import Button from '../components/Button'
-import { publishNeed, findMatchingDonors } from '../services/api'
+import { publishNeed, findMatchingDonors, checkActiveNeedForHospital } from '../services/api'
 
 function HospitalNeed() {
   const [form, setForm] = useState({
@@ -21,14 +21,24 @@ function HospitalNeed() {
   const [donorsFound, setDonorsFound] = useState([])
   const [alerting, setAlerting] = useState(false)
   const [visibleCount, setVisibleCount] = useState(0)
+  const [blocked, setBlocked] = useState(null)
 
   const updateField = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value })
+    setBlocked(null)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
+
+    const existing = await checkActiveNeedForHospital(form.hopital)
+    if (existing) {
+      setBlocked(existing)
+      setLoading(false)
+      return
+    }
+
     await publishNeed(form)
     setLoading(false)
     setPublie(true)
@@ -37,7 +47,6 @@ function HospitalNeed() {
     setDonorsFound(matches)
   }
 
-  // Fait apparaître les donneurs un par un, comme des alertes qui arrivent en direct
   useEffect(() => {
     if (donorsFound.length === 0) return
     setVisibleCount(0)
@@ -64,7 +73,7 @@ function HospitalNeed() {
         </p>
 
         <div className="w-full flex flex-col gap-2">
-          {donorsFound.slice(0, visibleCount).map((d, i) => (
+          {donorsFound.slice(0, visibleCount).map((d) => (
             <div
               key={d.id}
               className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 flex items-center gap-3 text-left animate-[fadeIn_0.4s_ease-out]"
@@ -98,6 +107,18 @@ function HospitalNeed() {
     <div className="max-w-md md:max-w-2xl mx-auto px-6 md:px-8 pt-2 pb-6">
       <TopBar />
       <PageHeader icon={Bell} title="Publier un besoin" subtitle="Les donneurs compatibles seront alertés immédiatement." />
+
+      {blocked && (
+        <div className="bg-gold/10 border border-gold/30 rounded-xl p-4 mb-4 flex items-start gap-3">
+          <AlertTriangle size={18} className="text-gold-dark shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-ink">Un besoin est déjà actif pour cet hôpital</p>
+            <p className="text-xs text-gray-600 mt-1">
+              {blocked.groupe} · {blocked.quantite} poches · {blocked.lieu}. Merci d'attendre sa résolution avant d'en publier un nouveau, pour éviter de saturer les donneurs d'alertes redondantes.
+            </p>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 md:max-w-lg">
         <Input
@@ -137,7 +158,7 @@ function HospitalNeed() {
         />
 
         <Button type="submit" variant="primary" className="mt-2 md:w-fit" disabled={loading}>
-          {loading ? "Envoi..." : "Publier le besoin"}
+          {loading ? "Vérification..." : "Publier le besoin"}
         </Button>
       </form>
     </div>
