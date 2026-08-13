@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Bell, CheckCircle2, AlertTriangle } from 'lucide-react'
+import { Bell, CheckCircle2, Info } from 'lucide-react'
 import TopBar from '../components/TopBar'
 import PageHeader from '../components/PageHeader'
 import Input from '../components/Input'
 import BloodGroupPicker from '../components/BloodGroupPicker'
 import UrgencyPicker from '../components/UrgencyPicker'
 import Button from '../components/Button'
-import { publishNeed, findMatchingDonors, checkActiveNeedForHospital } from '../services/api'
+import { publishNeed, findMatchingDonors } from '../services/api'
 
 function HospitalNeed() {
   const [form, setForm] = useState({
@@ -18,41 +18,31 @@ function HospitalNeed() {
   })
   const [publie, setPublie] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [donorsFound, setDonorsFound] = useState([])
+  const [result, setResult] = useState({ alerted: [], skippedForCooldown: 0, remainingEligible: 0 })
   const [alerting, setAlerting] = useState(false)
   const [visibleCount, setVisibleCount] = useState(0)
-  const [blocked, setBlocked] = useState(null)
 
   const updateField = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value })
-    setBlocked(null)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-
-    const existing = await checkActiveNeedForHospital(form.hopital)
-    if (existing) {
-      setBlocked(existing)
-      setLoading(false)
-      return
-    }
-
     await publishNeed(form)
     setLoading(false)
     setPublie(true)
     setAlerting(true)
-    const matches = await findMatchingDonors(form.groupe, form.lieu)
-    setDonorsFound(matches)
+    const res = await findMatchingDonors(form.groupe, form.lieu, form.urgence)
+    setResult(res)
   }
 
   useEffect(() => {
-    if (donorsFound.length === 0) return
+    if (result.alerted.length === 0) return
     setVisibleCount(0)
     const interval = setInterval(() => {
       setVisibleCount((prev) => {
-        if (prev >= donorsFound.length) {
+        if (prev >= result.alerted.length) {
           clearInterval(interval)
           setAlerting(false)
           return prev
@@ -61,7 +51,7 @@ function HospitalNeed() {
       })
     }, 500)
     return () => clearInterval(interval)
-  }, [donorsFound])
+  }, [result])
 
   if (publie) {
     return (
@@ -73,7 +63,7 @@ function HospitalNeed() {
         </p>
 
         <div className="w-full flex flex-col gap-2">
-          {donorsFound.slice(0, visibleCount).map((d) => (
+          {result.alerted.slice(0, visibleCount).map((d) => (
             <div
               key={d.id}
               className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 flex items-center gap-3 text-left animate-[fadeIn_0.4s_ease-out]"
@@ -94,9 +84,31 @@ function HospitalNeed() {
             <Bell size={13} className="animate-pulse" /> Envoi des alertes en cours...
           </p>
         )}
-        {!alerting && donorsFound.length > 0 && (
-          <p className="text-sm font-semibold text-hope mt-4">
-            {donorsFound.length} donneur(s) compatible(s) alerté(s) au total
+
+        {!alerting && result.alerted.length > 0 && (
+          <>
+            <p className="text-sm font-semibold text-hope mt-4">
+              {result.alerted.length} donneur(s) compatible(s) alerté(s) au total
+            </p>
+            {(result.skippedForCooldown > 0 || result.remainingEligible > 0) && (
+              <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 mt-3 text-left flex items-start gap-2">
+                <Info size={15} className="text-gray-400 shrink-0 mt-0.5" />
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  {result.skippedForCooldown > 0 && (
+                    <>{result.skippedForCooldown} donneur(s) compatible(s) non sollicité(s) car déjà alerté(s) récemment (moins de 48h). </>
+                  )}
+                  {result.remainingEligible > 0 && (
+                    <>{result.remainingEligible} autre(s) donneur(s) éligible(s) seront sollicités si le besoin persiste, pour ne pas sursolliciter toujours les mêmes personnes.</>
+                  )}
+                </p>
+              </div>
+            )}
+          </>
+        )}
+
+        {!alerting && result.alerted.length === 0 && (
+          <p className="text-sm text-gray-500 mt-4">
+            Aucun donneur disponible pour l'instant (tous récemment sollicités). Le besoin reste actif et sera transmis dès qu'un donneur redevient disponible.
           </p>
         )}
       </div>
@@ -107,18 +119,6 @@ function HospitalNeed() {
     <div className="max-w-md md:max-w-2xl mx-auto px-6 md:px-8 pt-2 pb-6">
       <TopBar />
       <PageHeader icon={Bell} title="Publier un besoin" subtitle="Les donneurs compatibles seront alertés immédiatement." />
-
-      {blocked && (
-        <div className="bg-gold/10 border border-gold/30 rounded-xl p-4 mb-4 flex items-start gap-3">
-          <AlertTriangle size={18} className="text-gold-dark shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-ink">Un besoin est déjà actif pour cet hôpital</p>
-            <p className="text-xs text-gray-600 mt-1">
-              {blocked.groupe} · {blocked.quantite} poches · {blocked.lieu}. Merci d'attendre sa résolution avant d'en publier un nouveau, pour éviter de saturer les donneurs d'alertes redondantes.
-            </p>
-          </div>
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 md:max-w-lg">
         <Input
@@ -158,7 +158,7 @@ function HospitalNeed() {
         />
 
         <Button type="submit" variant="primary" className="mt-2 md:w-fit" disabled={loading}>
-          {loading ? "Vérification..." : "Publier le besoin"}
+          {loading ? "Envoi..." : "Publier le besoin"}
         </Button>
       </form>
     </div>

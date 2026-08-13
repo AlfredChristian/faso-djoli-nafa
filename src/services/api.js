@@ -89,27 +89,17 @@ export async function getBloodGroupDistribution() {
   ]
 }
 
-const PRENOMS = ["Awa", "Ibrahim", "Fatimata", "Moussa", "Aminata", "Boureima", "Salamata", "Rasmané", "Adama", "Aicha"]
-
-export async function findMatchingDonors(groupe, lieu) {
-  await new Promise((r) => setTimeout(r, 600))
-  const count = Math.floor(Math.random() * 3) + 3 // entre 3 et 5 donneurs simulés
-  return Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    prenom: PRENOMS[Math.floor(Math.random() * PRENOMS.length)],
-    distance: (Math.random() * 4 + 0.3).toFixed(1),
-  }))
-}
-
-export async function getMyBadges() {
+export async function getStockLevels() {
   await new Promise((r) => setTimeout(r, 300))
   return [
-    { id: "premier", label: "Premier don", description: "Tu as fait ton tout premier don", earned: true },
-    { id: "fidele", label: "Donneur fidèle", description: "3 dons ou plus", earned: true },
-    { id: "heros", label: "Héros local", description: "5 dons ou plus", earned: false },
-    { id: "rapide", label: "Réponse rapide", description: "Répondu à une alerte en moins d'1h", earned: true },
-    { id: "raro", label: "Groupe rare", description: "Donneur d'un groupe sanguin rare (O-, AB-)", earned: true },
-    { id: "legende", label: "Légende", description: "10 dons ou plus", earned: false },
+    { id: 1, centre: "Centre de Ouagadougou", ville: "Ouagadougou", stock: 28, etat: "critique", xPct: 50.4, yPct: 47.9 },
+    { id: 2, centre: "Centre de Bobo-Dioulasso", ville: "Bobo-Dioulasso", stock: 82, etat: "stable", xPct: 15.2, yPct: 68.8 },
+    { id: 3, centre: "Centre de Koudougou", ville: "Koudougou", stock: 40, etat: "urgent", xPct: 39.7, yPct: 50.0 },
+    { id: 4, centre: "Centre de Ouahigouya", ville: "Ouahigouya", stock: 65, etat: "stable", xPct: 39.0, yPct: 26.6 },
+    { id: 5, centre: "Centre de Kaya", ville: "Kaya", stock: 55, etat: "stable", xPct: 55.9, yPct: 35.2 },
+    { id: 6, centre: "Centre de Banfora", ville: "Banfora", stock: 70, etat: "stable", xPct: 9.3, yPct: 78.4 },
+    { id: 7, centre: "Centre de Tenkodogo", ville: "Tenkodogo", stock: 22, etat: "critique", xPct: 65.0, yPct: 58.3 },
+    { id: 8, centre: "Centre de Fada N'Gourma", ville: "Fada N'Gourma", stock: 48, etat: "urgent", xPct: 74.2, yPct: 53.3 },
   ]
 }
 
@@ -129,24 +119,36 @@ export async function updateProfile(data) {
   return { success: true }
 }
 
-export async function getStockLevels() {
+export async function getMyBadges() {
   await new Promise((r) => setTimeout(r, 300))
   return [
-    { id: 1, centre: "Centre de Ouagadougou", ville: "Ouagadougou", stock: 28, etat: "critique", xPct: 50.4, yPct: 47.9 },
-    { id: 2, centre: "Centre de Bobo-Dioulasso", ville: "Bobo-Dioulasso", stock: 82, etat: "stable", xPct: 15.2, yPct: 68.8 },
-    { id: 3, centre: "Centre de Koudougou", ville: "Koudougou", stock: 40, etat: "urgent", xPct: 39.7, yPct: 50.0 },
-    { id: 4, centre: "Centre de Ouahigouya", ville: "Ouahigouya", stock: 65, etat: "stable", xPct: 39.0, yPct: 26.6 },
-    { id: 5, centre: "Centre de Kaya", ville: "Kaya", stock: 55, etat: "stable", xPct: 55.9, yPct: 35.2 },
-    { id: 6, centre: "Centre de Banfora", ville: "Banfora", stock: 70, etat: "stable", xPct: 9.3, yPct: 78.4 },
-    { id: 7, centre: "Centre de Tenkodogo", ville: "Tenkodogo", stock: 22, etat: "critique", xPct: 65.0, yPct: 58.3 },
-    { id: 8, centre: "Centre de Fada N'Gourma", ville: "Fada N'Gourma", stock: 48, etat: "urgent", xPct: 74.2, yPct: 53.3 },
+    { id: "premier", label: "Premier don", description: "Tu as fait ton tout premier don", earned: true },
+    { id: "fidele", label: "Donneur fidèle", description: "3 dons ou plus", earned: true },
+    { id: "heros", label: "Héros local", description: "5 dons ou plus", earned: false },
+    { id: "rapide", label: "Réponse rapide", description: "Répondu à une alerte en moins d'1h", earned: true },
+    { id: "raro", label: "Groupe rare", description: "Donneur d'un groupe sanguin rare (O-, AB-)", earned: true },
+    { id: "legende", label: "Légende", description: "10 dons ou plus", earned: false },
   ]
+}
+
+export async function sendOtp(telephone) {
+  console.log("API → envoi code SMS à :", telephone)
+  await new Promise((r) => setTimeout(r, 600))
+  return { success: true }
+}
+
+export async function verifyOtp(telephone, code) {
+  console.log("API → vérification code :", telephone, code)
+  await new Promise((r) => setTimeout(r, 500))
+  if (code.length === 4) {
+    return { success: true }
+  }
+  return { success: false, error: "Code incorrect" }
 }
 
 export async function adminLogin(email, password) {
   console.log("API → connexion admin :", email)
   await new Promise((r) => setTimeout(r, 500))
-  // Simulation : à remplacer par une vraie vérification Firebase Auth + rôle admin
   if (email && password.length >= 4) {
     return { success: true }
   }
@@ -165,24 +167,58 @@ export function setAdminLoggedIn(value) {
   }
 }
 
-export async function sendOtp(telephone) {
-  console.log("API → envoi code SMS à :", telephone)
-  await new Promise((r) => setTimeout(r, 600))
-  return { success: true }
-}
+const DONOR_POOL = [
+  { id: "d1", prenom: "Awa" },
+  { id: "d2", prenom: "Ibrahim" },
+  { id: "d3", prenom: "Fatimata" },
+  { id: "d4", prenom: "Moussa" },
+  { id: "d5", prenom: "Aminata" },
+  { id: "d6", prenom: "Boureima" },
+  { id: "d7", prenom: "Salamata" },
+  { id: "d8", prenom: "Rasmané" },
+  { id: "d9", prenom: "Adama" },
+  { id: "d10", prenom: "Aicha" },
+]
 
-export async function verifyOtp(telephone, code) {
-  console.log("API → vérification code :", telephone, code)
-  await new Promise((r) => setTimeout(r, 500))
-  // Simulation : à remplacer par une vraie vérification Firebase Auth Phone
-  if (code.length === 4) {
-    return { success: true }
+const COOLDOWN_HOURS = 48
+
+function getAlertLog() {
+  try {
+    return JSON.parse(localStorage.getItem("fdn_alert_log") || "{}")
+  } catch {
+    return {}
   }
-  return { success: false, error: "Code incorrect" }
 }
 
-export async function checkActiveNeedForHospital(hopitalName) {
-  await new Promise((r) => setTimeout(r, 300))
-  const needs = await getNeeds()
-  return needs.find((n) => n.hopital.trim().toLowerCase() === hopitalName.trim().toLowerCase()) || null
+function saveAlertLog(log) {
+  localStorage.setItem("fdn_alert_log", JSON.stringify(log))
+}
+
+function hoursSince(isoDate) {
+  return (Date.now() - new Date(isoDate).getTime()) / (1000 * 60 * 60)
+}
+
+export async function findMatchingDonors(groupe, lieu, urgence) {
+  await new Promise((r) => setTimeout(r, 600))
+
+  const log = getAlertLog()
+  const candidates = DONOR_POOL.map((d) => ({
+    ...d,
+    distance: (Math.random() * 4 + 0.3).toFixed(1),
+    lastAlertedAt: log[d.id] || null,
+  })).sort((a, b) => a.distance - b.distance)
+
+  const onCooldown = (d) => d.lastAlertedAt && hoursSince(d.lastAlertedAt) < COOLDOWN_HOURS
+
+  const eligible = urgence === "critique" ? candidates : candidates.filter((d) => !onCooldown(d))
+  const skippedForCooldown = urgence === "critique" ? 0 : candidates.filter(onCooldown).length
+
+  const limit = urgence === "critique" ? 6 : 3
+  const selected = eligible.slice(0, limit)
+
+  const now = new Date().toISOString()
+  selected.forEach((d) => { log[d.id] = now })
+  saveAlertLog(log)
+
+  return { alerted: selected, skippedForCooldown, remainingEligible: eligible.length - selected.length }
 }
