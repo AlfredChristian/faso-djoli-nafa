@@ -15,6 +15,7 @@ function DonorRegister() {
     ville: "",
     dernierDon: "",
   })
+  const [consent, setConsent] = useState(false)
   const [envoye, setEnvoye] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -24,8 +25,9 @@ function DonorRegister() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (!consent) return
     setLoading(true)
-    await registerDonor(form)
+    await registerDonor({ ...form, consentAt: new Date().toISOString() })
     setLoading(false)
     setEnvoye(true)
   }
@@ -87,7 +89,25 @@ function DonorRegister() {
           />
         </div>
 
-        <Button type="submit" variant="primary" className="mt-2 md:w-fit" disabled={loading}>
+        <label className="flex items-start gap-2.5 mt-1 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            required
+            className="mt-0.5 w-4 h-4 accent-blood shrink-0"
+          />
+          <span className="text-xs text-gray-500 leading-relaxed">
+            J'accepte que mon groupe sanguin, ma ville et mon statut d'éligibilité soient partagés
+            avec les hôpitaux partenaires en cas de besoin compatible, et que mon téléphone soit
+            utilisé pour recevoir des alertes.{" "}
+            <a href="/confidentialite" target="_blank" rel="noopener noreferrer" className="text-blood font-semibold underline">
+              Voir la politique de confidentialité
+            </a>
+          </span>
+        </label>
+
+        <Button type="submit" variant="primary" className="mt-1 md:w-fit" disabled={loading || !consent}>
           {loading ? "Envoi..." : "Je m'inscris"}
         </Button>
       </form>

@@ -9,6 +9,7 @@ import Login from './pages/Login'
 import Profile from './pages/Profile'
 import DonationHistory from './pages/DonationHistory'
 import EditProfile from './pages/EditProfile'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 import Admin from './pages/Admin'
 import AdminLogin from './pages/AdminLogin'
 import NotFound from './pages/NotFound'
@@ -27,6 +28,7 @@ function App() {
           <Route path="/profil" element={<Profile />} />
           <Route path="/profil/dons" element={<DonationHistory />} />
           <Route path="/profil/modifier" element={<EditProfile />} />
+          <Route path="/confidentialite" element={<PrivacyPolicy />} />
           <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
           <Route path="*" element={<NotFound />} />
         </Route>
