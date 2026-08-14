@@ -2,7 +2,7 @@ function Button({ children, variant = "primary", type = "button", onClick, class
   const base = "px-6 py-3 rounded-xl font-semibold text-sm transition-transform active:scale-95 disabled:opacity-50 disabled:active:scale-100"
 
   const variants = {
-    primary: "bg-blood text-white hover:bg-blood-dark",
+    primary: "bg-blood text-white hover:bg-blood-dark shadow-lg shadow-blood/20",
     secondary: "bg-white text-blood border-2 border-blood hover:bg-blood/5",
   }
 

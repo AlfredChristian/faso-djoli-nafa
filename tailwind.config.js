@@ -3,7 +3,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-  ],  
+  ],
   theme: {
     extend: {
       colors: {
@@ -16,13 +16,14 @@ export default {
         },
         gold: {
           DEFAULT: "#F1C40F",
+          dark: "#B7950B",
         },
         ink: {
           DEFAULT: "#1F2937",
         },
+        paper: "#FCFBF9",
       },
     },
   },
   plugins: [],
 }
-
