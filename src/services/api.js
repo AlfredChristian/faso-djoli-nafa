@@ -1,32 +1,29 @@
+const API_URL = "http://localhost:8000/api"
+
 export async function registerDonor(data) {
-  console.log("API → inscription donneur :", data)
-  await new Promise((r) => setTimeout(r, 500))
-  return { success: true }
+  const res = await fetch(`${API_URL}/donors/register/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+  return res.json()
 }
 
 export async function publishNeed(data) {
-  console.log("API → publication besoin :", data)
-  await new Promise((r) => setTimeout(r, 500))
-  return { success: true }
+  const res = await fetch(`${API_URL}/needs/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+  return res.json()
 }
 
 export async function getNeeds() {
-  await new Promise((r) => setTimeout(r, 300))
-  return [
-    { id: 1, hopital: "CHU Yalgado Ouédraogo", groupe: "O-", quantite: 5, urgence: "critique", lieu: "Ouagadougou" },
-    { id: 2, hopital: "CHR Bobo-Dioulasso", groupe: "A+", quantite: 3, urgence: "urgent", lieu: "Bobo-Dioulasso" },
-    { id: 3, hopital: "CMA Ouagadougou", groupe: "B+", quantite: 2, urgence: "normal", lieu: "Ouagadougou" },
-  ]
+  const res = await fetch(`${API_URL}/needs/`)
+  return res.json()
 }
 
 export async function getMyProfile() {
-  await new Promise((r) => setTimeout(r, 300))
-  return {
-    nom: "Awa Ouédraogo",
-    groupe: "O-",
-    ville: "Ouagadougou",
-    dernierDon: "2026-03-15",
-    nombreDons: 4,
-    viesAidees: 12,
-  }
+  const res = await fetch(`${API_URL}/donors/me/`)
+  return res.json()
 }
