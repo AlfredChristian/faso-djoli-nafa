@@ -25,3 +25,13 @@ dist-ssr
 
 dev-dist
 .env
+
+dev-dist
+.env
+
+# Backend Django
+backend/venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/db.sqlite3

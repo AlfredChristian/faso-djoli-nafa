@@ -13,6 +13,8 @@ import PrivacyPolicy from './pages/PrivacyPolicy'
 import Admin from './pages/Admin'
 import AdminLogin from './pages/AdminLogin'
 import NotFound from './pages/NotFound'
+import HospitalRegister from './pages/HospitalRegister'
+import HospitalLogin from './pages/HospitalLogin'
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/inscription" element={<DonorRegister />} />
           <Route path="/hopital" element={<HospitalNeed />} />
+          <Route path="/hopital/inscription" element={<HospitalRegister />} />
+          <Route path="/hopital/connexion" element={<HospitalLogin />} />
           <Route path="/besoins" element={<NeedsList />} />
           <Route path="/connexion" element={<Login />} />
           <Route path="/profil" element={<Profile />} />

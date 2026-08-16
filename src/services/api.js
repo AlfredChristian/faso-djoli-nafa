@@ -1,5 +1,15 @@
 const API_URL = "http://localhost:8000/api"
 
+function authHeaders() {
+  const token = localStorage.getItem("fdn_token")
+  return token ? { Authorization: `Token ${token}` } : {}
+}
+
+function adminAuthHeaders() {
+  const token = localStorage.getItem("fdn_admin_token")
+  return token ? { Authorization: `Token ${token}` } : {}
+}
+
 export async function registerDonor(data) {
   const res = await fetch(`${API_URL}/donors/register/`, {
     method: "POST",
@@ -12,7 +22,7 @@ export async function registerDonor(data) {
 export async function publishNeed(data) {
   const res = await fetch(`${API_URL}/needs/`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...hospitalAuthHeaders() },
     body: JSON.stringify(data),
   })
   return res.json()
@@ -24,68 +34,44 @@ export async function getNeeds() {
 }
 
 export async function getMyProfile() {
-
-  const res = await fetch(`${API_URL}/donors/me/`)
+  const res = await fetch(`${API_URL}/donors/me/`, { headers: authHeaders() })
   return res.json()
-  
 }
 
 export async function getAdminStats() {
-  await new Promise((r) => setTimeout(r, 300))
-  return {
-    donneurs: 312,
-    hopitaux: 14,
-    besoinsActifs: 3,
-    besoinsResolus: 47,
-  }
+  const res = await fetch(`${API_URL}/admin/stats/`, { headers: adminAuthHeaders() })
+  return res.json()
 }
 
 export async function getPendingHospitals() {
-  await new Promise((r) => setTimeout(r, 300))
-  return [
-    { id: 1, nom: "Clinique Notre-Dame", ville: "Ouagadougou", date: "2026-08-09" },
-    { id: 2, nom: "CMA Koudougou", ville: "Koudougou", date: "2026-08-10" },
-  ]
+  const res = await fetch(`${API_URL}/admin/hospitals/pending/`, { headers: adminAuthHeaders() })
+  return res.json()
 }
 
 export async function validateHospital(id) {
-  console.log("API → validation hôpital :", id)
-  await new Promise((r) => setTimeout(r, 400))
-  return { success: true }
+  const res = await fetch(`${API_URL}/admin/hospitals/${id}/validate/`, {
+    method: "POST",
+    headers: adminAuthHeaders(),
+  })
+  return res.json()
 }
 
 export async function rejectHospital(id) {
-  console.log("API → rejet hôpital :", id)
-  await new Promise((r) => setTimeout(r, 400))
-  return { success: true }
+  const res = await fetch(`${API_URL}/admin/hospitals/${id}/reject/`, {
+    method: "POST",
+    headers: adminAuthHeaders(),
+  })
+  return res.json()
 }
 
 export async function getAllDonors() {
-  await new Promise((r) => setTimeout(r, 300))
-  return [
-    { id: 1, nom: "Awa Ouédraogo", groupe: "O-", ville: "Ouagadougou", dernierDon: "2026-03-15", dons: 4 },
-    { id: 2, nom: "Ibrahim Sawadogo", groupe: "A+", ville: "Ouagadougou", dernierDon: "2026-07-02", dons: 2 },
-    { id: 3, nom: "Fatimata Kaboré", groupe: "O+", ville: "Bobo-Dioulasso", dernierDon: "2026-01-20", dons: 7 },
-    { id: 4, nom: "Moussa Traoré", groupe: "B+", ville: "Ouagadougou", dernierDon: "2026-06-28", dons: 1 },
-    { id: 5, nom: "Aminata Zongo", groupe: "AB-", ville: "Koudougou", dernierDon: "2025-12-05", dons: 5 },
-    { id: 6, nom: "Boureima Compaoré", groupe: "O-", ville: "Ouagadougou", dernierDon: "2026-05-11", dons: 3 },
-    { id: 7, nom: "Salamata Ouattara", groupe: "A-", ville: "Bobo-Dioulasso", dernierDon: "2026-04-02", dons: 2 },
-    { id: 8, nom: "Rasmané Kaboré", groupe: "B-", ville: "Ouagadougou", dernierDon: "2026-02-18", dons: 6 },
-  ]
+  const res = await fetch(`${API_URL}/admin/donors/`, { headers: adminAuthHeaders() })
+  return res.json()
 }
 
 export async function getBloodGroupDistribution() {
-  await new Promise((r) => setTimeout(r, 300))
-  return [
-    { groupe: "O+", total: 98 },
-    { groupe: "O-", total: 41 },
-    { groupe: "A+", total: 76 },
-    { groupe: "A-", total: 22 },
-    { groupe: "B+", total: 45 },
-    { groupe: "B-", total: 14 },
-    { groupe: "AB+", total: 12 },
-    { groupe: "AB-", total: 4 },
-  ]
+  const res = await fetch(`${API_URL}/admin/blood-distribution/`, { headers: adminAuthHeaders() })
+  return res.json()
 }
 
 export async function getStockLevels() {
@@ -103,19 +89,17 @@ export async function getStockLevels() {
 }
 
 export async function getDonationHistory() {
-  await new Promise((r) => setTimeout(r, 300))
-  return [
-    { id: 1, date: "2026-03-15", centre: "CNTS Ouagadougou", quantite: 1, ville: "Ouagadougou" },
-    { id: 2, date: "2025-12-02", centre: "CHU Yalgado Ouédraogo", quantite: 1, ville: "Ouagadougou" },
-    { id: 3, date: "2025-08-20", centre: "CNTS Ouagadougou", quantite: 1, ville: "Ouagadougou" },
-    { id: 4, date: "2025-04-11", centre: "CMA Secteur 30", quantite: 1, ville: "Ouagadougou" },
-  ]
+  const res = await fetch(`${API_URL}/donors/me/donations/`, { headers: authHeaders() })
+  return res.json()
 }
 
 export async function updateProfile(data) {
-  console.log("API → mise à jour profil :", data)
-  await new Promise((r) => setTimeout(r, 500))
-  return { success: true }
+  const res = await fetch(`${API_URL}/donors/me/`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(data),
+  })
+  return res.json()
 }
 
 export async function getMyBadges() {
@@ -130,28 +114,71 @@ export async function getMyBadges() {
   ]
 }
 
+function hospitalAuthHeaders() {
+  const token = localStorage.getItem("fdn_hospital_token")
+  return token ? { Authorization: `Token ${token}` } : {}
+}
+
+export async function registerHospital(data) {
+  const res = await fetch(`${API_URL}/hospitals/register/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  })
+  return res.json()
+}
+
+export async function loginHospital(email, password) {
+  const res = await fetch(`${API_URL}/hospitals/login/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  })
+  const data = await res.json()
+  if (data.success && data.token) {
+    localStorage.setItem("fdn_hospital_token", data.token)
+  }
+  return data
+}
+
+export async function getHospitalNeedsHistory() {
+  const res = await fetch(`${API_URL}/hospitals/me/needs/`, { headers: hospitalAuthHeaders() })
+  return res.json()
+}
+
 export async function sendOtp(telephone) {
-  console.log("API → envoi code SMS à :", telephone)
-  await new Promise((r) => setTimeout(r, 600))
-  return { success: true }
+  const res = await fetch(`${API_URL}/donors/send-otp/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ telephone }),
+  })
+  return res.json()
 }
 
 export async function verifyOtp(telephone, code) {
-  console.log("API → vérification code :", telephone, code)
-  await new Promise((r) => setTimeout(r, 500))
-  if (code.length === 4) {
-    return { success: true }
+  const res = await fetch(`${API_URL}/donors/verify-otp/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ telephone, code }),
+  })
+  const data = await res.json()
+  if (data.success && data.token) {
+    localStorage.setItem("fdn_token", data.token)
   }
-  return { success: false, error: "Code incorrect" }
+  return data
 }
 
 export async function adminLogin(email, password) {
-  console.log("API → connexion admin :", email)
-  await new Promise((r) => setTimeout(r, 500))
-  if (email && password.length >= 4) {
-    return { success: true }
+  const res = await fetch(`${API_URL}/admin/login/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  })
+  const data = await res.json()
+  if (data.success && data.token) {
+    localStorage.setItem("fdn_admin_token", data.token)
   }
-  return { success: false, error: "Identifiants incorrects" }
+  return data
 }
 
 export function isAdminLoggedIn() {
@@ -166,59 +193,11 @@ export function setAdminLoggedIn(value) {
   }
 }
 
-const DONOR_POOL = [
-  { id: "d1", prenom: "Awa" },
-  { id: "d2", prenom: "Ibrahim" },
-  { id: "d3", prenom: "Fatimata" },
-  { id: "d4", prenom: "Moussa" },
-  { id: "d5", prenom: "Aminata" },
-  { id: "d6", prenom: "Boureima" },
-  { id: "d7", prenom: "Salamata" },
-  { id: "d8", prenom: "Rasmané" },
-  { id: "d9", prenom: "Adama" },
-  { id: "d10", prenom: "Aicha" },
-]
-
-const COOLDOWN_HOURS = 48
-
-function getAlertLog() {
-  try {
-    return JSON.parse(localStorage.getItem("fdn_alert_log") || "{}")
-  } catch {
-    return {}
-  }
-}
-
-function saveAlertLog(log) {
-  localStorage.setItem("fdn_alert_log", JSON.stringify(log))
-}
-
-function hoursSince(isoDate) {
-  return (Date.now() - new Date(isoDate).getTime()) / (1000 * 60 * 60)
-}
-
 export async function findMatchingDonors(groupe, lieu, urgence) {
-  await new Promise((r) => setTimeout(r, 600))
-
-  const log = getAlertLog()
-  const candidates = DONOR_POOL.map((d) => ({
-    ...d,
-    distance: (Math.random() * 4 + 0.3).toFixed(1),
-    lastAlertedAt: log[d.id] || null,
-  })).sort((a, b) => a.distance - b.distance)
-
-  const onCooldown = (d) => d.lastAlertedAt && hoursSince(d.lastAlertedAt) < COOLDOWN_HOURS
-
-  const eligible = urgence === "critique" ? candidates : candidates.filter((d) => !onCooldown(d))
-  const skippedForCooldown = urgence === "critique" ? 0 : candidates.filter(onCooldown).length
-
-  const limit = urgence === "critique" ? 6 : 3
-  const selected = eligible.slice(0, limit)
-
-  const now = new Date().toISOString()
-  selected.forEach((d) => { log[d.id] = now })
-  saveAlertLog(log)
-
-  return { alerted: selected, skippedForCooldown, remainingEligible: eligible.length - selected.length }
-
+  const res = await fetch(`${API_URL}/needs/match/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ groupe, lieu, urgence }),
+  })
+  return res.json()
 }
